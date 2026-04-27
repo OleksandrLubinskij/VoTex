@@ -1,6 +1,6 @@
-import torch
-import whisper
+from src.model.model import Model
+from src.model.handle_json import read_json, write_json
 
-print(f"CUDA доступна: {torch.cuda.is_available()}")
-model = whisper.load_model("tiny")
-print(f"Модель працює на: {model.device}")
+if __name__ == "__main__":
+    m1 = Model()
+    print(m1.define_valid_models_for_device())

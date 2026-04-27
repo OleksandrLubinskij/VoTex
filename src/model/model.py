@@ -3,7 +3,8 @@ import torch
 import gc
 import os
 import subprocess
-import config
+import src.config as config
+
 class Model:
     def __init__(self):
         self._current_file_path = None
@@ -12,8 +13,8 @@ class Model:
         self._model_size = "base"
         self._language = "uk"
         self._fp16 = True if torch.cuda.is_available() else False
-        self._prompt = "Це український текст"
-        self._use_preprocessing = True
+        self._prompt = ""
+        self._use_preprocessing = False
         self._loaded_instance = None
         self._device = config.CUDA if torch.cuda.is_available() else config.CPU
 
@@ -123,7 +124,3 @@ class Model:
     def return_result(self, transcrib_output):
         for x in transcrib_output:
             print(f"{round(x['start'])} - {round(x['end'])}\t{x['text']}")
-m1 = Model()
-# m1.set_current_file_path(r"D:\MyProjects\VoTex_content\with_noise.ogg")
-# m1.transcrib()
-print(m1.define_valid_models_for_device())
