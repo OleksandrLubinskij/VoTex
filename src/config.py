@@ -18,3 +18,7 @@ MODELS_FOR_CPU = ["tiny", "tiny.en", "base", "base.en", "small", "small.en"]
 
 CPU = "cpu"
 CUDA = "cuda"
+
+WINDOWS = "Windows"
+LINUX = "Linux"
+MACOS = "Darwin"
