@@ -5,19 +5,28 @@ import os
 import subprocess
 import src.config as config
 
-class Model:
+class ModelTransrib:
     def __init__(self):
         self._current_file_path = None
-        self._save_directory = ""
-        self._valid_models = []
         self._model_size = "base"
         self._language = "uk"
-        self._fp16 = True if torch.cuda.is_available() else False
-        self._prompt = ""
+        self._fp16 = torch.cuda.is_available()
         self._use_preprocessing = False
-        self._loaded_instance = None
+        self._prompt = ""
+        
+        self._save_directory = ""
         self._device = config.CUDA if torch.cuda.is_available() else config.CPU
+        self._loaded_instance = None
+        self._valid_models = []
+        self.set_valid_models()
 
+    def set_params(self, **settings):
+        self._current_file_path = settings.get("file_path", self._current_file_path)
+        self._model_size = settings.get("model_size", self._model_size)
+        self._language = settings.get("language", self._language)
+        self._fp16 = settings.get("fp16", self._fp16)
+        self._use_preprocessing = settings.get("use_preprocessing", self._use_preprocessing)
+        self._prompt = settings.get("prompt", self._prompt)
     def get_all_settings(self):
         return {
             "file_path": self._current_file_path,
@@ -26,10 +35,14 @@ class Model:
             "language": self._language,
             "fp16": self._fp16,
             "use_preprocessing": self._use_preprocessing,
+            "prompt":self._prompt,
             "device": self._device,
             "model_loaded": self._loaded_instance is not None
         }
 
+    def get_valid_models(self):
+        return self._valid_models
+    
     def get_vram_info(self):
         properties = torch.cuda.get_device_properties(0)
 
@@ -76,18 +89,19 @@ class Model:
     def set_use_preprocessing(self, value: bool):
         self._use_preprocessing = value
     
-    def get_load_model(self, size):
-        if self._loaded_instance and self._model_size == size:
+    def get_load_model(self):
+        current_in_memory = getattr(self._loaded_instance, 'name', None)
+        if self._loaded_instance is not None and current_in_memory == self._model_size:
             return
-        elif self._loaded_instance and self._model_size != size:
+        if self._loaded_instance is not None:
             del self._loaded_instance
             self._loaded_instance = None
             gc.collect()
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-                print(f"Пам'ять очищено від моделі {self._model_size}")
-        print(f"Початок завантаження моделі {size}")
-        self._model_size = size
+                print(f"Пам'ять очищено від моделі {current_in_memory}")
+        print(f"Початок завантаження моделі {self._model_size}")
+
         self._loaded_instance = whisper.load_model(self._model_size, device=self._device)
 
     def preprocess_content(self, input_path):
@@ -109,9 +123,9 @@ class Model:
             print(f"Помилка FFmpeg {e}")
             return input_path
 
-    def transcrib(self, model_size="medium"):
-        self.get_load_model(model_size)
+    def transcrib(self):
         file_path = self._current_file_path
+        self.get_load_model()
         if self._use_preprocessing:
             file_path = self.preprocess_content(self._current_file_path)
 
