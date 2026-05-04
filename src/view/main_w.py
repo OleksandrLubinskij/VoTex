@@ -16,7 +16,7 @@ class MainFrame(BaseView):
         self.language_var = tk.StringVar(value="uk")
         self.fp16_var = tk.BooleanVar(value=True)
         self.preprocessing_var = tk.BooleanVar(value=False)
-        self.prompt_var = tk.StringVar(value="")
+        
 
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
@@ -29,13 +29,14 @@ class MainFrame(BaseView):
         self.main_content.grid(row=0, column=1, sticky="nswe")
     
     def compile_parameters(self):
+        prompt_var = self.main_content.parameters_frame.prompt_textbox.get("1.0", "end-1c")
         return {
             "file_path": self.file_path_var.get(),
             "model_size": self.model_size_var.get(),
             "language": self.language_var.get(),
             "fp16": self.fp16_var.get(),
             "preprocessing": self.preprocessing_var.get(),
-            "prompt": self.prompt_var.get(),
+            "prompt": prompt_var,
         }
 
 class MainContent(ctk.CTkFrame):
@@ -50,9 +51,10 @@ class MainContent(ctk.CTkFrame):
         self.parameters_frame = ParametersFrame(master=self,
         controller=controller)
 
-        self.input_frame.grid(row=0, column=0, sticky="we", pady=(120, 15))
+        self.input_frame.grid(row=0, column=0, sticky="we", pady=(240, 50))
         self.parameters_frame.grid(row=1, column=0, sticky="nwe")
 
+    
 class InputFrame(ctk.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
@@ -111,118 +113,77 @@ class ParametersFrame(ctk.CTkFrame):
         self.columnconfigure(1, weight=0)
         self.columnconfigure(2, weight=0)
         self.columnconfigure(3, weight=1)
-
+        for i in range(4):
+            self.rowconfigure(i, weight=1)
         #Вибір моделі---------------------------------------
         self.choose_model_frame = ctk.CTkFrame(master=self,
                                                fg_color ="transparent",
                                                )
-        self.choose_model_label = self.create_label(self.choose_model_frame, "Розмір моделі")
+        self.choose_model_label = master.master.create_label(self.choose_model_frame, "Розмір моделі")
         self.choose_model_label.pack(anchor="w")
 
-        self.choose_model_options = ctk.CTkOptionMenu(
-            master=self.choose_model_frame,
-            values=self.available_models,
-            variable=self.master.master.model_size_var,
-            width=200,
-            height=40,
-            corner_radius=8,
-            dynamic_resizing=False,
-            anchor="center", 
-            fg_color="#40c057",   
-            button_color="#31b249", 
-            button_hover_color="#2b9a3f",
-            text_color="#000000",
-            font=("Segoe UI", 14, "bold"),
-            dropdown_font=("Segoe UI", 14)
-        ) 
+        self.choose_model_options = master.master.create_option(master = self.choose_model_frame,
+                                                                values = self.available_models,
+                                                                var = self.master.master.model_size_var)
         self.choose_model_options.pack()
-        self.choose_model_frame.grid(row=0, column=1, sticky="nw", padx=(0, 150))    
+        self.choose_model_frame.grid(row=0, column=1, sticky="nw", padx=(0, 145))    
 
         #Вибір мови-------------------------------------------------
         self.choose_language_frame = ctk.CTkFrame(master=self,
                                                fg_color ="transparent",
                                                )
-        self.choose_language_label = self.create_label(self.choose_language_frame, "Мова")
+        self.choose_language_label = master.master.create_label(self.choose_language_frame, "Мова")
         self.choose_language_label.pack(anchor="w")
 
-        self.choose_language_options = ctk.CTkOptionMenu(
-            master=self.choose_language_frame,
-            values=self.available_languages,
-            variable=self.master.master.language_var,
-            width=200,
-            height=40,
-            corner_radius=8,
-            dynamic_resizing=False,
-            anchor="center", 
-            fg_color="#40c057",   
-            button_color="#31b249", 
-            button_hover_color="#2b9a3f",
-            text_color="#000000",
-            font=("Segoe UI", 14, "bold"),
-            dropdown_font=("Segoe UI", 14)
-        ) 
+        self.choose_language_options = master.master.create_option(master = self.choose_language_frame,
+                                                                values = self.available_languages,
+                                                                var = self.master.master.language_var)
         self.choose_language_options.pack()
-        self.choose_language_frame.grid(row=1, column=1, pady=10, sticky="nw")
+        self.choose_language_frame.grid(row=1, column=1, pady=20, sticky="nw")
 
         #Перемикач FP16------------------------------------------------
         self.fp16_frame = ctk.CTkFrame(master=self, fg_color="transparent")
         
-        self.fp16_label = self.create_label(self.fp16_frame, "Використовувати fp16")
+        self.fp16_label = master.master.create_label(self.fp16_frame, "Використовувати fp16")
         self.fp16_label.pack(side="left", padx=(0, 10))
 
-        self.fp16_switch = ctk.CTkSwitch(
-            master=self.fp16_frame,
-            text="",
-            variable=self.master.master.fp16_var,
-            progress_color="#40c057",
-            width=50
-        )
+        self.fp16_switch = master.master.create_switch(master=self.fp16_frame,
+                                                       var=self.master.master.fp16_var)
         self.fp16_switch.pack(side="right")
-        self.fp16_frame.grid(row=2, column=1, sticky="nw", pady=5)
+        self.fp16_frame.grid(row=2, column=1, sticky="nw", pady=20)
 
         #Перемикач препроцесинг---------------------------------------------------
         self.preprocessing_frame = ctk.CTkFrame(master=self, fg_color="transparent")
         
-        self.preprocessing_label = self.create_label(self.preprocessing_frame, "Попередня обробка")
+        self.preprocessing_label = master.master.create_label(self.preprocessing_frame, "Попередня обробка")
         self.preprocessing_label.pack(side="left", padx=(0, 10))
 
-        self.preprocessing_switch = ctk.CTkSwitch(
-            master=self.preprocessing_frame,
-            text="",
-            variable=self.master.master.preprocessing_var,
-            progress_color="#40c057",
-            width=50
-        )
+        self.preprocessing_switch = master.master.create_switch(master=self.preprocessing_frame,
+                                                       var=self.master.master.preprocessing_var)
         self.preprocessing_switch.pack(side="right")
         self.preprocessing_frame.grid(row=3, column=1, sticky="nw", pady=5)
 
         #Поле вводу промпту---------------------------------------
         self.prompt_frame = ctk.CTkFrame(master=self,
                                          fg_color="transparent")
-        self.prompt_label = self.create_label(self.prompt_frame, "Промпт")
+        self.prompt_label = master.master.create_label(self.prompt_frame, "Промпт")
         self.prompt_label.pack(anchor="w", padx=5, pady=(0, 5))
         self.prompt_textbox = ctk.CTkTextbox(
             master=self.prompt_frame,
-            width=300,
+            width=450,
             corner_radius=12,
             border_width=2,
             border_color="#40c057",
             fg_color="#ffffff",  
             text_color="#000000",
-            font=("Segoe UI", 14),
+            font=("Segoe UI", 24),
             undo=True,   
             wrap="word",
         )
-        self.prompt_textbox.pack(fill="x")
-        self.prompt_frame.grid(row=0, column=2,rowspan=2, sticky="nwse")
+        self.prompt_textbox.pack(fill="both", expand=True)
+        self.prompt_frame.grid(row=0, column=2,rowspan=4, sticky="nwse")
 
-    def create_label(self, master, text):
-        label = ctk.CTkLabel(
-            master=master,
-            text=text,
-            font=("Segoe UI", 20, "bold")
-        )
-        return label
+    
 class SideBarFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master,

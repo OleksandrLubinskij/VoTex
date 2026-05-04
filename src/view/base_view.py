@@ -48,3 +48,40 @@ class BaseView(ctk.CTk):
         if os.path.exists(png_path):
             self.icon_image = tk.PhotoImage(file=png_path)
             self.iconphoto(False, self.icon_image)
+
+    def create_label(self, master, text):
+        label = ctk.CTkLabel(
+            master=master,
+            text=text,
+            font=("Segoe UI", 24, "bold")
+        )
+        return label
+
+    def create_option(self, master, values, var):
+        option = ctk.CTkOptionMenu(
+            master=master,
+            values=values,
+            variable=var,
+            width=350,
+            height=50,
+            corner_radius=8,
+            dynamic_resizing=False,
+            anchor="center", 
+            fg_color="#40c057",   
+            button_color="#31b249", 
+            button_hover_color="#2b9a3f",
+            text_color="#000000",
+            font=("Segoe UI", 20, "bold"),
+            dropdown_font=("Segoe UI", 20)
+        )
+        return option
+    
+    def create_switch(self, master, var):
+        switch = ctk.CTkSwitch(
+            master=master,
+            text="",
+            variable=var,
+            progress_color="#40c057",
+            width=70
+        )
+        return switch
