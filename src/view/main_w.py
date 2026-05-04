@@ -3,10 +3,11 @@ import tkinter as tk
 import os
 from PIL import Image
 from src.view.base_view import BaseView
+import src.config as config
 
 class MainFrame(BaseView):
-    def __init__(self, controller):
-        super().__init__()
+    def __init__(self, controller, master, **kwargs):
+        super().__init__(master, **kwargs, )
         self.controller = controller
         self.configure(fg_color="#f0f8ff")
 
@@ -80,7 +81,7 @@ class InputFrame(ctk.CTkFrame):
         )
         self.choose_path_btn.grid(row=0, column=1, padx=10)
 
-        icon_path = os.path.join(BaseView.project_dir, "assets", "play_light.png")
+        icon_path = os.path.join(config.ASSETS_DIR, "play_light.png")
         icon = ctk.CTkImage(light_image=Image.open(icon_path), size=(30, 30))
 
         self.start_algorithm_btn = ctk.CTkButton(
@@ -197,7 +198,7 @@ class SideBarFrame(ctk.CTkFrame):
         icons = ["history_light.png", "info_light.png", "settings_light.png"]
         for icon_name in icons:
 
-            icon_path = os.path.join(BaseView.project_dir, "assets", icon_name)
+            icon_path = os.path.join(config.ASSETS_DIR, icon_name)
 
             icon = ctk.CTkImage(
                 light_image = Image.open(icon_path),

@@ -1,3 +1,5 @@
+import os
+import platform
 WHISPER_MODELS_VRAM = {
     "tiny": 1.0,
     "tiny.en": 1.0,
@@ -22,3 +24,13 @@ CUDA = "cuda"
 WINDOWS = "Windows"
 LINUX = "Linux"
 MACOS = "Darwin"
+
+MAIN_FRAME = "MainFrame"
+PROCESSING = "Processing"
+
+CURRENT_OS = platform.system()
+current_dir = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(current_dir)
+
+# Тепер асети будуть шукатися правильно
+ASSETS_DIR = os.path.join(BASE_DIR, "assets")

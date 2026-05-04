@@ -1,0 +1,69 @@
+import tkinter as tk
+import customtkinter as ctk
+import os
+import platform
+import src.config as config
+from src.view.main_w import MainFrame
+from src.view.processing_w import Processing
+
+class View(ctk.CTk):
+    def __init__(self, controller):
+        super().__init__()
+        self.title("VoTex")
+        self.after(0, self.set_maximized)
+    
+    
+        self.frames = {}
+        self.controller = controller
+        self.container = ctk.CTkFrame(self)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
+        self.container.pack(side="right",
+                                      fill="both",
+                                      expand=True)
+        
+        for F in (MainFrame, Processing):
+            page_name = F.__name__
+            frame = F(controller=self.controller, master=self.container)
+            self.frames[page_name] = frame
+            frame.grid(row=0, column=0, sticky="nswe")
+
+        self.show_frame("MainFrame")
+
+    def set_maximized(self):
+        os_action = {
+            config.WINDOWS: lambda: self.state("zoomed"),
+            config.LINUX: lambda: self.attributes("-zoomed", True),
+            config.MACOS: lambda: self.state("normal")
+        }
+
+        action = os_action.get(config.CURRENT_OS, lambda: self.geometry("1200x800"))
+
+        try:
+            action()
+        except Exception as e:
+            print(f"Can`t open zoomed window, used default size\n Error: {e}")
+
+    def setup_icon(self):
+        
+        icon_path = os.path.join(config.ASSETS_DIR, "logo.ico")
+        print(icon_path)
+        os_action = {
+            config.WINDOWS: lambda: self.iconbitmap(icon_path),
+            config.LINUX: lambda: self._set_png_icon(icon_path),
+            config.MACOS: lambda: self._set_png_icon(icon_path),
+        }
+        action = os_action.get(config.CURRENT_OS)
+        try:
+            action()
+        except:
+            print("Can`t load icon!")
+    
+    def _set_png_icon(self, icon_path):
+        png_path = icon_path.replace(".ico", ".png")
+        if os.path.exists(png_path):
+            self.icon_image = tk.PhotoImage(file=png_path)
+            self.iconphoto(False, self.icon_image)
+    def show_frame(self, page_name):
+        frame = self.frames[page_name]
+        frame.tkraise()
