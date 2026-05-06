@@ -52,20 +52,24 @@ class ResultFrame(BaseView):
         
         self.buttons_frame = ctk.CTkFrame(master=self.main_frame,
                                           fg_color="transparent")
-        for i in range(0, 4):
-            self.buttons_frame.columnconfigure(i, weight=1)
+        
         buttons_dict = {
             "Зберегти": lambda: self.controller.save_result(manual=False),
             "Зберегти як": lambda: self.controller.save_result(manual=True),
             "На головну": lambda: self.controller.switch_frame(config.MAIN_FRAME)
         }
 
+        for i in range(len(buttons_dict)):
+            self.buttons_frame.columnconfigure(i, weight=1, uniform="buttons")
+            
+        
+
         for i, (name_btn, command_btn) in enumerate(buttons_dict.items()):
             button = self.create_button(master = self.buttons_frame,
                                         text =name_btn,
                                         command = command_btn
                                         )
-            button.grid(row=0, column=i, padx=(0, 15), sticky="nswe")
+            button.grid(row=0, column=i, padx=10, sticky="nswe")
         
 
     def prepare_for_new_task(self):
@@ -86,13 +90,4 @@ class ResultFrame(BaseView):
         self.result_textbox.insert("end", text)
         
         self.result_textbox.pack(fill="both", expand=True, padx=15, pady=15)
-        self.buttons_frame.pack(fill="x", padx=20, pady=10)
-        
-        
-
-        
-
-        
-
-
-        
+        self.buttons_frame.pack(fill="x", padx=20, pady=10)    

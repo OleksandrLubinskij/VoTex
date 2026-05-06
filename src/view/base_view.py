@@ -50,10 +50,11 @@ class BaseView(ctk.CTkFrame):
             master = master,
             text=text,
             fg_color="#40c057",
+            hover_color="#2b9a3f",
             font=("Segoe UI", 20, "bold"),
-            border_width=2,
-            border_color="#000000",
+            text_color="#000000",
             corner_radius=8,
+            height=56,
             command=command
         )
         return button
