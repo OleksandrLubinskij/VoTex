@@ -26,7 +26,7 @@ LINUX = "Linux"
 MACOS = "Darwin"
 
 MAIN_FRAME = "MainFrame"
-PROCESSING = "ResultFrame"
+RESULT_FRAME = "ResultFrame"
 
 CURRENT_OS = platform.system()
 current_dir = os.path.dirname(os.path.abspath(__file__))

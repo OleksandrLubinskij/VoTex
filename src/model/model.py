@@ -20,6 +20,9 @@ class ModelTransrib:
         self._valid_models = []
         self.set_valid_models()
 
+        self.result = None
+        self.is_busy = False
+
     def set_params(self, **settings):
         self._current_file_path = settings.get("file_path", self._current_file_path)
         self._model_size = settings.get("model_size", self._model_size)
@@ -123,18 +126,35 @@ class ModelTransrib:
             print(f"Помилка FFmpeg {e}")
             return input_path
 
-    def transcrib(self):
-        file_path = self._current_file_path
-        self.get_load_model()
-        if self._use_preprocessing:
-            file_path = self.preprocess_content(self._current_file_path)
+    def transcribe(self):        
+        try:
+            file_path = self._current_file_path
+            self.get_load_model()
+            
+            if self._use_preprocessing:
+                file_path = self.preprocess_content(self._current_file_path)
 
-        result = self._loaded_instance.transcribe(file_path,
-                                                  language=self._language,
-                                                  fp16=self._fp16,
-                                                  initial_prompt=self._prompt)
-        self.return_result(result["segments"])
+            raw_result = self._loaded_instance.transcribe(
+                file_path,
+                language=self._language,
+                fp16=self._fp16,
+                initial_prompt=self._prompt
+            )
+            
+            self.result = raw_result["segments"]
+            
+        except Exception as e:
+            print(f"Error during transcription: {e}")
+            self.result = f"Помилка: {str(e)}"
+            
+        finally:
+            self.is_busy = False
 
-    def return_result(self, transcrib_output):
-        for x in transcrib_output:
-            print(f"{round(x['start'])} - {round(x['end'])}\t{x['text']}")
+    def format_segments_to_text(self, segments):
+        output = ""
+        for x in segments:
+            start = round(x['start'])
+            end = round(x['end'])
+            content = x['text'].strip()
+            output += f"[{start} : {end}]  {content}\n\n"
+        return output
