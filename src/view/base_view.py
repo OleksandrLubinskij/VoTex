@@ -1,4 +1,7 @@
 import customtkinter as ctk
+import os
+from PIL import Image
+import src.config as config
 class BaseView(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -41,3 +44,37 @@ class BaseView(ctk.CTkFrame):
             width=70
         )
         return switch
+    
+class SideBarFrame(ctk.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master,
+                        width=60, 
+                        fg_color="#40c057",
+                        border_color="#000000",
+                        corner_radius=0,
+                        **kwargs)
+        
+        self.grid_propagate(False)
+        icons = ["history_light.png", "info_light.png", "settings_light.png"]
+        for icon_name in icons:
+
+            icon_path = os.path.join(config.ASSETS_DIR, icon_name)
+
+            icon = ctk.CTkImage(
+                light_image = Image.open(icon_path),
+                dark_image= Image.open(icon_path.replace("light", "dark")),
+                size=(40, 40)
+            )
+
+            self.icon_btn = ctk.CTkButton(
+                self,
+                text="",
+                image=icon,
+                width=60,
+                height=60,
+                fg_color="transparent",
+                hover_color="#66ce79",
+                corner_radius=8
+            )
+
+            self.icon_btn.pack(pady=(20, 10), padx=5)

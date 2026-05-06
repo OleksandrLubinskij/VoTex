@@ -1,10 +1,10 @@
 import tkinter as tk
 import customtkinter as ctk
 import os
-import platform
 import src.config as config
 from src.view.main_w import MainFrame
-from src.view.processing_w import Processing
+from src.view.result_w import ResultFrame
+from src.view.base_view import SideBarFrame
 
 class View(ctk.CTk):
     def __init__(self, controller):
@@ -17,16 +17,19 @@ class View(ctk.CTk):
         self.controller = controller
         self.container = ctk.CTkFrame(self)
         self.container.grid_rowconfigure(0, weight=1)
-        self.container.grid_columnconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=0)
+        self.container.grid_columnconfigure(1, weight=1)
         self.container.pack(side="right",
                                       fill="both",
                                       expand=True)
-        
-        for F in (MainFrame, Processing):
+        self.sidebar = SideBarFrame(master=self.container)
+        self.sidebar.grid(row=0, column=0, sticky="nswe")
+
+        for F in (MainFrame, ResultFrame):
             page_name = F.__name__
             frame = F(controller=self.controller, master=self.container)
             self.frames[page_name] = frame
-            frame.grid(row=0, column=0, sticky="nswe")
+            frame.grid(row=0, column=1, sticky="nswe")
 
         self.show_frame("MainFrame")
 
@@ -67,3 +70,4 @@ class View(ctk.CTk):
     def show_frame(self, page_name):
         frame = self.frames[page_name]
         frame.tkraise()
+
