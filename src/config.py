@@ -34,3 +34,4 @@ BASE_DIR = os.path.dirname(current_dir)
 
 # Тепер асети будуть шукатися правильно
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+DB_PATH = os.path.join(BASE_DIR, "history.db")
