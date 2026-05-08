@@ -4,6 +4,7 @@ import os
 import src.config as config
 from src.view.main_w import MainFrame
 from src.view.result_w import ResultFrame
+from src.view.history_w import HistoryFrame
 from src.view.base_view import SideBarFrame
 
 class View(ctk.CTk):
@@ -22,10 +23,10 @@ class View(ctk.CTk):
         self.container.pack(side="right",
                                       fill="both",
                                       expand=True)
-        self.sidebar = SideBarFrame(master=self.container)
+        self.sidebar = SideBarFrame(master=self.container, controller = self.controller)
         self.sidebar.grid(row=0, column=0, sticky="nswe")
 
-        for F in (MainFrame, ResultFrame):
+        for F in (MainFrame, ResultFrame, HistoryFrame):
             page_name = F.__name__
             frame = F(controller=self.controller, master=self.container)
             self.frames[page_name] = frame

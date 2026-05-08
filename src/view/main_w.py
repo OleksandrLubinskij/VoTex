@@ -11,16 +11,13 @@ class MainFrame(BaseView):
         self.controller = controller
         self.configure(fg_color="#f0f8ff")
 
-        # Змінні даних
         self.file_path_var = tk.StringVar(value="")
         self.model_size_var = tk.StringVar(value="base")
         self.language_var = tk.StringVar(value="uk")
         self.fp16_var = tk.BooleanVar(value=True)
         self.preprocessing_var = tk.BooleanVar(value=False)
         
-        # Головний контейнер, який ми центруємо
         self.main_content = MainContent(master=self, controller=self.controller)
-        # Тепер anchor="center" дійсно поставить центр фрейму в центр екрана
         self.main_content.place(relx=0.5, rely=0.5, anchor="center")
     
     def compile_parameters(self):
@@ -38,13 +35,11 @@ class MainContent(ctk.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
         
-        # Внутрішня сітка для верхньої та нижньої частини
         self.columnconfigure(0, weight=1)
 
         self.input_frame = InputFrame(master=self, controller=controller)
         self.parameters_frame = ParametersFrame(master=self, controller=controller)
 
-        # pady тепер мінімальний, суто щоб розсунути блоки
         self.input_frame.grid(row=0, column=0, sticky="we", pady=(0, 40))
         self.parameters_frame.grid(row=1, column=0, sticky="nwe")
 
@@ -70,7 +65,6 @@ class InputFrame(ctk.CTkFrame):
         )
         self.choose_path_btn.grid(row=0, column=1, padx=10)
 
-        # Іконка запуску
         icon_path = os.path.join(config.ASSETS_DIR, "play_light.png")
         icon = ctk.CTkImage(light_image=Image.open(icon_path), size=(30, 30))
 
@@ -102,13 +96,11 @@ class ParametersFrame(ctk.CTkFrame):
         self.available_models = self.controller.get_available_models()
         self.available_languages = self.controller.get_available_languages()
 
-        # Налаштування колонок: Ліва (0) і Права (3) — пружини для центрування
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=0) # Налаштування
-        self.columnconfigure(2, weight=0) # Промпт
+        self.columnconfigure(1, weight=0)
+        self.columnconfigure(2, weight=0)
         self.columnconfigure(3, weight=1)
 
-        # Контейнер для лівих налаштувань (модель, мова, свічі)
         self.settings_col = ctk.CTkFrame(self, fg_color="transparent")
         self.settings_col.grid(row=0, column=1, sticky="n", padx=(0, 40))
 

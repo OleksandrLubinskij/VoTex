@@ -6,7 +6,6 @@ class TranscribeRecord(Base):
     __tablename__ = "history"
 
     id = Column(Integer, primary_key=True)
-    file_name = Column(String)
     model_size = Column(String)
     language = Column(String)
     fp16 = Column(Boolean)
@@ -19,10 +18,9 @@ class HistoryManager():
     def __init__(self):
         Base.metadata.create_all(engine)
 
-    def create_record(self, file_name, model_size, language, fp16, preprocessing, prompt, result):
+    def create_record(self, model_size, language, fp16, preprocessing, prompt, result):
         with Session.begin() as session:
             new_record = TranscribeRecord(
-                file_name = file_name,
                 model_size = model_size,
                 language = language,
                 fp16 = fp16,
@@ -33,14 +31,32 @@ class HistoryManager():
             session.add(new_record)
 
     def read_records(self, limit=10, offset=0):
-        with Session as session:
-            stmt = select(TranscribeRecord
+        with Session() as session:
+            stmt = select(TranscribeRecord.id,
+                          TranscribeRecord.model_size, 
+                          TranscribeRecord.language, 
+                          TranscribeRecord.fp16,
+                          TranscribeRecord.preprocessing
                         ).limit(limit
                         ).offset(offset
                         ).order_by(TranscribeRecord.timestamp.desc())
-            result = session.execute(stmt).scalars().all()
+            result = session.execute(stmt).all()
             return result
+        
+    def read_prompt(self, id):
+        with Session() as session:
+            stmt = select(TranscribeRecord.prompt
+                        ).where(TranscribeRecord.id == id)
+            prompt = session.execute(stmt).one()
+            return prompt
     
+    def read_result(self, id):
+        with Session() as session:
+            stmt = select(TranscribeRecord.result
+                        ).where(TranscribeRecord.id == id)
+            result = session.execute(stmt).one()
+            return result
+
     def delete_all(self):
         with Session.begin() as session:
             stmt = delete(TranscribeRecord)

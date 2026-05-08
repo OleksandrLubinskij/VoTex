@@ -7,12 +7,12 @@ class BaseView(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         
 
-    def create_label(self, master, text, var=None):
+    def create_label(self, master, text, var=None, font_size=24, weight="bold"):
         label = ctk.CTkLabel(
             master=master,
             text=text,
-            font=("Segoe UI", 24, "bold"),
-            textvariable = var
+            font=("Segoe UI", font_size, weight),
+            textvariable=var
         )
         return label
 
@@ -45,29 +45,41 @@ class BaseView(ctk.CTkFrame):
         )
         return switch
     
-    def create_button(self, master, text, command):
+    def create_button(self, master, text, command, fg_color="#40c057", hover_color="#2b9a3f", font_size=20, height=56, width=140):
         button = ctk.CTkButton(
-            master = master,
+            master=master,
             text=text,
-            fg_color="#40c057",
-            hover_color="#2b9a3f",
-            font=("Segoe UI", 20, "bold"),
+            fg_color=fg_color,
+            hover_color=hover_color,
+            font=("Segoe UI", font_size, "bold"),
             text_color="#000000",
             corner_radius=8,
-            height=56,
+            height=height,
+            width=width,
             command=command
         )
         return button
     
+    def create_action_button(self, master, text, command, color="#40c057"):
+        return self.create_button(
+            master=master, 
+            text=text, 
+            command=command, 
+            fg_color=color,
+            hover_color="#31b249", # Трохи темніший
+            font_size=16, 
+            height=32, 
+            width=40
+        )
 class SideBarFrame(ctk.CTkFrame):
-    def __init__(self, master, **kwargs):
+    def __init__(self, controller, master, **kwargs):
         super().__init__(master,
                         width=60, 
                         fg_color="#40c057",
                         border_color="#000000",
                         corner_radius=0,
                         **kwargs)
-        
+        self.controller = controller
         self.grid_propagate(False)
         icons = ["history_light.png", "info_light.png", "settings_light.png"]
         for icon_name in icons:
@@ -88,7 +100,8 @@ class SideBarFrame(ctk.CTkFrame):
                 height=60,
                 fg_color="transparent",
                 hover_color="#66ce79",
-                corner_radius=8
+                corner_radius=8,
+                command=self.controller.open_history
             )
 
             self.icon_btn.pack(pady=(20, 10), padx=5)

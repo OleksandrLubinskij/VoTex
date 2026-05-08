@@ -27,11 +27,14 @@ MACOS = "Darwin"
 
 MAIN_FRAME = "MainFrame"
 RESULT_FRAME = "ResultFrame"
+HISTORY_FRAME = "HistoryFrame"
 
 CURRENT_OS = platform.system()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(current_dir)
 
-# Тепер асети будуть шукатися правильно
+
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 DB_PATH = os.path.join(BASE_DIR, "history.db")
+
+TABLE_COLUMNS = ("Model", "Language", "FP16", "Prep", "Prompt", "Result", "")

@@ -30,17 +30,15 @@ class ModelTransrib:
         self._fp16 = settings.get("fp16", self._fp16)
         self._use_preprocessing = settings.get("use_preprocessing", self._use_preprocessing)
         self._prompt = settings.get("prompt", self._prompt)
-    def get_all_settings(self):
+        
+    def get_trinscribe_data(self):
         return {
-            "file_path": self._current_file_path,
-            "save_dir": self._save_directory,
             "model_size": self._model_size,
             "language": self._language,
             "fp16": self._fp16,
-            "use_preprocessing": self._use_preprocessing,
-            "prompt":self._prompt,
-            "device": self._device,
-            "model_loaded": self._loaded_instance is not None
+            "preprocessing": self._use_preprocessing,
+            "prompt": self._prompt,
+            "result": self.result
         }
 
     def get_valid_models(self):
@@ -126,8 +124,9 @@ class ModelTransrib:
             print(f"Помилка FFmpeg {e}")
             return input_path
 
-    def transcribe(self):        
+    def transcribe(self):         
         try:
+            self.is_busy = True # На всякий випадок ставимо і тут
             file_path = self._current_file_path
             self.get_load_model()
             
@@ -139,10 +138,9 @@ class ModelTransrib:
                 language=self._language,
                 fp16=self._fp16,
                 initial_prompt=self._prompt
-            )
-            
-            self.result = raw_result["segments"]
-            
+            ) 
+            self.format_segments_to_text(raw_result["segments"])
+        
         except Exception as e:
             print(f"Error during transcription: {e}")
             self.result = f"Помилка: {str(e)}"
@@ -157,4 +155,5 @@ class ModelTransrib:
             end = round(x['end'])
             content = x['text'].strip()
             output += f"[{start} : {end}]  {content}\n\n"
+        self.result = output
         return output
