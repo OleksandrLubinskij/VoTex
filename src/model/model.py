@@ -126,7 +126,7 @@ class ModelTransrib:
 
     def transcribe(self):         
         try:
-            self.is_busy = True # На всякий випадок ставимо і тут
+            self.is_busy = True
             file_path = self._current_file_path
             self.get_load_model()
             

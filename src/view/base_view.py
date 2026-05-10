@@ -45,10 +45,11 @@ class BaseView(ctk.CTkFrame):
         )
         return switch
     
-    def create_button(self, master, text, command, fg_color="#40c057", hover_color="#2b9a3f", font_size=20, height=56, width=140):
+    def create_button(self, master, text, command, fg_color="#40c057", hover_color="#2b9a3f", font_size=20, height=56, width=140, image=None):
         button = ctk.CTkButton(
             master=master,
             text=text,
+            image=image,
             fg_color=fg_color,
             hover_color=hover_color,
             font=("Segoe UI", font_size, "bold"),
@@ -60,16 +61,17 @@ class BaseView(ctk.CTkFrame):
         )
         return button
     
-    def create_action_button(self, master, text, command, color="#40c057"):
+    def create_action_button(self, master, text, image, command, color="#40c057", hover_color="#31b249"):
         return self.create_button(
             master=master, 
             text=text, 
+            image=image,
             command=command, 
             fg_color=color,
-            hover_color="#31b249", # Трохи темніший
+            hover_color=hover_color,
             font_size=16, 
             height=32, 
-            width=40
+            width=1
         )
 class SideBarFrame(ctk.CTkFrame):
     def __init__(self, controller, master, **kwargs):

@@ -37,4 +37,4 @@ BASE_DIR = os.path.dirname(current_dir)
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 DB_PATH = os.path.join(BASE_DIR, "history.db")
 
-TABLE_COLUMNS = ("Model", "Language", "FP16", "Prep", "Prompt", "Result", "")
+TABLE_HEADERS = ("Модель", "Мова", "FP16", "Prep", "Промпт", "Результат", "")

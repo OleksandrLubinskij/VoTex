@@ -3,14 +3,15 @@ import tkinter as tk
 from tkinter import ttk
 from src.view.base_view import BaseView
 import src.config as config
+import os
+from PIL import Image
 
 class HistoryFrame(BaseView):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, **kwargs)
         self.rows = {}
         self.controller = controller
-        
-        # Контейнер на всю доступну площу
+        self.configure(fg_color="#f0f8ff")
         self.main_container = ctk.CTkFrame(self, fg_color="transparent")
         self.main_container.pack(expand=True, fill="both", padx=20, pady=20)
 
@@ -22,17 +23,15 @@ class HistoryFrame(BaseView):
         self.header_frame.pack(fill="x", padx=5)
         
         # Ваги колонок: Модель забирає найбільше місця
-        self.column_weights = [4, 1, 1, 1, 1, 1, 1]
-        for i, weight in enumerate(self.column_weights):
-            self.header_frame.grid_columnconfigure(i, weight=weight)
+        self.column_weights = [1, 1, 1, 1, 1, 1, 1]
+        for i in range(len(config.TABLE_HEADERS)):
+            self.header_frame.grid_columnconfigure(i, weight=1, uniform="column_group")
 
-        headers = ["Модель", "Мова", "FP16", "Prep", "Промпт", "Текст", "Дія"]
-        for i, col_name in enumerate(headers):
-            # ТІЛЬКИ для 0 та 1 колонок ставимо sticky="w"
-            # Для всіх інших - пуста строка "", що означає "центрувати"
-            align = "w" if i < 2 else ""
+        for i, col_name in enumerate(config.TABLE_HEADERS):
+
+            align = "we"
             
-            lbl = ctk.CTkLabel(self.header_frame, text=col_name, font=("Segoe UI", 13, "bold"))
+            lbl = ctk.CTkLabel(self.header_frame, text=col_name, font=("Segoe UI", 20, "bold"))
             lbl.grid(row=0, column=i, sticky=align, padx=10, pady=5)
 
         # Список із прокруткою
@@ -52,6 +51,7 @@ class HistoryFrame(BaseView):
                           fg_color="#ff5252", hover_color="#ff1744", width=200).pack(side="right", padx=5)
 
     def fill_table(self):
+        font_size=16
         for widget in self.scroll_frame.winfo_children():
             widget.destroy()
         self.rows.clear()
@@ -62,38 +62,50 @@ class HistoryFrame(BaseView):
             table_row = ctk.CTkFrame(self.scroll_frame, fg_color="transparent")
             table_row.pack(fill="x", pady=2) 
 
-            for col_idx, weight in enumerate(self.column_weights):
-                table_row.grid_columnconfigure(col_idx, weight=weight)
+            for col_idx in range(len(config.TABLE_HEADERS)):
+                table_row.grid_columnconfigure(col_idx, weight=1, uniform="column_group")
             
-            # 0. Модель (Вліво)
-            self.create_label(master=table_row, text=record.model_size, font_size=14, weight="normal")\
-                .grid(row=0, column=0, padx=10, sticky="w")
+            #Модель
+            self.create_label(master=table_row, text=record.model_size, font_size=font_size)\
+                .grid(row=0, column=0, padx=10, sticky="nwse")
 
-            # 1. Мова (Вліво)
-            self.create_label(master=table_row, text=record.language, font_size=14, weight="normal")\
-                .grid(row=0, column=1, padx=10, sticky="w")
+            #Мова
+            self.create_label(master=table_row, text=record.language, font_size=font_size)\
+                .grid(row=0, column=1, padx=10, sticky="nwse")
 
-            # 2. FP16 (По центру - sticky НЕ вказуємо)
-            fp16_val = "✅" if record.fp16 else "❌"
-            self.create_label(master=table_row, text=fp16_val, font_size=14)\
-                .grid(row=0, column=2, padx=5)
+            #FP16
+            fp16_val = "Так" if record.fp16 else "Ні"
+            self.create_label(master=table_row, text=fp16_val, font_size=font_size)\
+                .grid(row=0, column=2, padx=5, sticky="nwse")
 
-            # 3. Preprocessing (По центру - sticky НЕ вказуємо)
-            prep_val = "✅" if record.preprocessing else "❌"
-            self.create_label(master=table_row, text=prep_val, font_size=14)\
-                .grid(row=0, column=3, padx=5)
+            #Preprocessing
+            prep_val = "Так" if record.preprocessing else "Ні"
+            self.create_label(master=table_row, text=prep_val, font_size=font_size)\
+                .grid(row=0, column=3, padx=5, sticky="nwse")
             
-            # 4. Кнопка Промпт (По центру)
-            self.create_action_button(table_row, "💬", lambda r_id=record.id: self.controller.open_prompt_viewer(r_id))\
-                .grid(row=0, column=4, padx=5, pady=2)
+            icons_namaes = ["message_light.png", "sheet_light.png", "trash_light.png"]
+            icons = []
+            for i_name in icons_namaes:
 
-            # 5. Кнопка Результат (По центру)
-            self.create_action_button(table_row, "📄", lambda r_id=record.id: self.controller.open_result_viewer(r_id))\
-                .grid(row=0, column=5, padx=5, pady=2)
+                icon_path = os.path.join(config.ASSETS_DIR, i_name)
 
-            # 6. Кнопка Видалити (По центру)
-            self.create_action_button(table_row, "🗑️", lambda r_id=record.id: self.controller.delete_record(r_id), color="#ff8a80")\
-                .grid(row=0, column=6, padx=5, pady=2)
+                icon = ctk.CTkImage(
+                    light_image = Image.open(icon_path),
+                    dark_image= Image.open(icon_path.replace("light", "dark")),
+                    size=(24, 24)
+                )
+                icons.append(icon)
+            #Кнопка Промпт
+            self.create_action_button(table_row, "", icons[0], lambda r_id=record.id: self.controller.open_prompt_viewer(r_id))\
+                .grid(row=0, column=4, pady=2, padx=5)
+
+            #Кнопка Результат
+            self.create_action_button(table_row, "", icons[1], lambda r_id=record.id: self.controller.open_result_viewer(r_id))\
+                .grid(row=0, column=5, pady=2, padx=5)
+
+            #Кнопка Видалити
+            self.create_action_button(table_row, "", icons[2], lambda r_id=record.id: self.controller.delete_record(r_id), color="#ff8a80", hover_color="#db695f")\
+                .grid(row=0, column=6, pady=2, padx=5)
             
             self.rows[record.id] = table_row
 
