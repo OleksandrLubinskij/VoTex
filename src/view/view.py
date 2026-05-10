@@ -25,14 +25,14 @@ class View(ctk.CTk):
                                       expand=True)
         self.sidebar = SideBarFrame(master=self.container, controller = self.controller)
         self.sidebar.grid(row=0, column=0, sticky="nswe")
-
+        self._current_frame = config.MAIN_FRAME
         for F in (MainFrame, ResultFrame, HistoryFrame):
             page_name = F.__name__
             frame = F(controller=self.controller, master=self.container)
             self.frames[page_name] = frame
             frame.grid(row=0, column=1, sticky="nswe")
 
-        self.show_frame("MainFrame")
+        self.show_frame(config.MAIN_FRAME)
 
     def set_maximized(self):
         os_action = {
@@ -68,6 +68,13 @@ class View(ctk.CTk):
         if os.path.exists(png_path):
             self.icon_image = tk.PhotoImage(file=png_path)
             self.iconphoto(False, self.icon_image)
+
+    def get_current_frame(self):
+        return self._current_frame
+    
+    def set_current_frame(self, new_frame):
+        self._current_frame = new_frame
+        
     def show_frame(self, page_name):
         frame = self.frames[page_name]
         frame.tkraise()

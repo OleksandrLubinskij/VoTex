@@ -47,14 +47,14 @@ class HistoryManager():
         with Session() as session:
             stmt = select(TranscribeRecord.prompt
                         ).where(TranscribeRecord.id == id)
-            prompt = session.execute(stmt).one()
+            prompt = session.execute(stmt).one()[0]
             return prompt
     
     def read_result(self, id):
         with Session() as session:
             stmt = select(TranscribeRecord.result
                         ).where(TranscribeRecord.id == id)
-            result = session.execute(stmt).one()
+            result = session.execute(stmt).one()[0]
             return result
 
     def delete_all(self):

@@ -15,15 +15,13 @@ class HistoryFrame(BaseView):
         self.main_container = ctk.CTkFrame(self, fg_color="transparent")
         self.main_container.pack(expand=True, fill="both", padx=20, pady=20)
 
-        self.history_label = self.create_label(self.main_container, text="Історія результатів", font_size=28)
+        self.history_label = self.create_label(self.main_container, text="Історія результатів", font_size=32)
         self.history_label.pack(anchor="w", pady=(0, 20))
 
         # Шапка таблиці
         self.header_frame = ctk.CTkFrame(self.main_container, fg_color="#e0e0e0", height=40)
         self.header_frame.pack(fill="x", padx=5)
         
-        # Ваги колонок: Модель забирає найбільше місця
-        self.column_weights = [1, 1, 1, 1, 1, 1, 1]
         for i in range(len(config.TABLE_HEADERS)):
             self.header_frame.grid_columnconfigure(i, weight=1, uniform="column_group")
 
@@ -31,19 +29,19 @@ class HistoryFrame(BaseView):
 
             align = "we"
             
-            lbl = ctk.CTkLabel(self.header_frame, text=col_name, font=("Segoe UI", 20, "bold"))
-            lbl.grid(row=0, column=i, sticky=align, padx=10, pady=5)
+            lbl = ctk.CTkLabel(self.header_frame, text=col_name, font=("Segoe UI", 24, "bold"))
+            lbl.grid(row=0, column=i, sticky=align, padx=10, pady=10)
 
         # Список із прокруткою
         self.scroll_frame = ctk.CTkScrollableFrame(self.main_container, fg_color="transparent")
-        self.scroll_frame.pack(expand=True, fill="both", pady=10)
+        self.scroll_frame.pack(expand=True, fill="both", pady=15)
 
         # Панель кнопок знизу
         self.bottom_bar = ctk.CTkFrame(self.main_container, fg_color="transparent")
-        self.bottom_bar.pack(fill="x", pady=(10, 0))
+        self.bottom_bar.pack(fill="x", pady=(15, 0))
 
         self.create_button(self.bottom_bar, "На головну", 
-                          lambda: self.controller.switch_frame(config.MAIN_FRAME),
+                          self.controller.handle_back_to_main_frame,
                           width=200).pack(side="left", padx=5)
         
         self.create_button(self.bottom_bar, "Очистити все", 
@@ -51,7 +49,7 @@ class HistoryFrame(BaseView):
                           fg_color="#ff5252", hover_color="#ff1744", width=200).pack(side="right", padx=5)
 
     def fill_table(self):
-        font_size=16
+        font_size=20
         for widget in self.scroll_frame.winfo_children():
             widget.destroy()
         self.rows.clear()
@@ -60,7 +58,7 @@ class HistoryFrame(BaseView):
         
         for record in data:
             table_row = ctk.CTkFrame(self.scroll_frame, fg_color="transparent")
-            table_row.pack(fill="x", pady=2) 
+            table_row.pack(fill="x", pady=5) 
 
             for col_idx in range(len(config.TABLE_HEADERS)):
                 table_row.grid_columnconfigure(col_idx, weight=1, uniform="column_group")
@@ -76,12 +74,12 @@ class HistoryFrame(BaseView):
             #FP16
             fp16_val = "Так" if record.fp16 else "Ні"
             self.create_label(master=table_row, text=fp16_val, font_size=font_size)\
-                .grid(row=0, column=2, padx=5, sticky="nwse")
+                .grid(row=0, column=2, padx=10, sticky="nwse")
 
             #Preprocessing
             prep_val = "Так" if record.preprocessing else "Ні"
             self.create_label(master=table_row, text=prep_val, font_size=font_size)\
-                .grid(row=0, column=3, padx=5, sticky="nwse")
+                .grid(row=0, column=3, padx=10, sticky="nwse")
             
             icons_namaes = ["message_light.png", "sheet_light.png", "trash_light.png"]
             icons = []
@@ -97,15 +95,15 @@ class HistoryFrame(BaseView):
                 icons.append(icon)
             #Кнопка Промпт
             self.create_action_button(table_row, "", icons[0], lambda r_id=record.id: self.controller.open_prompt_viewer(r_id))\
-                .grid(row=0, column=4, pady=2, padx=5)
+                .grid(row=0, column=4, pady=2, padx=10)
 
             #Кнопка Результат
             self.create_action_button(table_row, "", icons[1], lambda r_id=record.id: self.controller.open_result_viewer(r_id))\
-                .grid(row=0, column=5, pady=2, padx=5)
+                .grid(row=0, column=5, pady=2, padx=10)
 
             #Кнопка Видалити
-            self.create_action_button(table_row, "", icons[2], lambda r_id=record.id: self.controller.delete_record(r_id), color="#ff8a80", hover_color="#db695f")\
-                .grid(row=0, column=6, pady=2, padx=5)
+            self.create_action_button(table_row, "", icons[2], lambda r_id=record.id: self.controller.delete_record(r_id), color="#ff5252", hover_color="#ff1744")\
+                .grid(row=0, column=6, pady=2, padx=10)
             
             self.rows[record.id] = table_row
 
@@ -124,7 +122,7 @@ class HistoryFrame(BaseView):
         top.title(title)
         top.geometry("600x500")
         top.attributes("-topmost", True)
-
+        top.attributes("-toolwindow", True)
         txt = ctk.CTkTextbox(top, wrap="word")
         txt.pack(expand=True, fill="both", padx=20, pady=20)
         txt.insert("1.0", content)
@@ -132,18 +130,16 @@ class HistoryFrame(BaseView):
 
         btn_frame = ctk.CTkFrame(top, fg_color="transparent")
         btn_frame.pack(fill="x", side="bottom", padx=20, pady=(0, 20))
-
-        ctk.CTkButton(btn_frame, text="Закрити", command=top.destroy).pack(side="right", padx=5)
+        self.create_button(btn_frame, text="Закрити", command=top.destroy, fg_color="#ff5252", hover_color="#ff1744").pack(side="right", padx=5)
         
         if can_save:
-            save_frame = ctk.CTkFrame(master=top, fg_color="transparent")
-            self.create_button(master = save_frame, 
+            self.create_button(master = btn_frame, 
                                text = "Зберегти",
-                               command = lambda manual=True: self.controller.save_result(manual)).pack(side="left", padx=(0, 5))
-            self.create_button(master = save_frame,
+                               command = lambda manual=False: self.controller.save_result(manual)).pack(side="left", padx=5)
+            self.create_button(master = btn_frame,
                                text = "Зберегти як",
-                               command = lambda manual=False: self.controller.save_result(manual)).pack(side="left")
-            save_frame.pack()
+                               command = lambda manual=True: self.controller.save_result(manual)).pack(side="left", padx=5)
+            btn_frame.pack()
 
 
 

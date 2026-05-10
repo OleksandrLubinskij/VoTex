@@ -1,5 +1,6 @@
 import threading
 import tkinter as tk
+from tkinter import messagebox
 from src.view.view import View
 from src.model.model import ModelTransrib
 from src.model.handle_json import read_json, write_json
@@ -31,6 +32,7 @@ class Controller:
         )
         transcribe_thread.start()
         self.switch_frame(config.RESULT_FRAME)
+        self.view.set_current_frame(config.RESULT_FRAME)
         self.check_for_result()
         
         
@@ -61,8 +63,13 @@ class Controller:
             file.write(content)
     
     def open_history(self):
-        self.switch_frame(config.HISTORY_FRAME)
-        self.view.frames[config.HISTORY_FRAME].fill_table()
+        current_frame = self.view.get_current_frame()
+        if current_frame == config.MAIN_FRAME:
+            self.switch_frame(config.HISTORY_FRAME)
+            self.view.frames[config.HISTORY_FRAME].fill_table()
+            self.view.set_current_frame(config.HISTORY_FRAME)
+        else:
+            self.handle_back_to_main_frame()
         
     def switch_frame(self, frame):
         self.view.show_frame(frame)
@@ -132,6 +139,15 @@ class Controller:
         self.view.frames[config.HISTORY_FRAME].remove_record_from_ui(id)
     
     def delete_all_records(self):
-        self.delete_all_history()
-        self.view.frames[config.HISTORY_FRAME].remove_all_records_from_ui()
+        is_confirmed = messagebox.askyesno(
+            title="Підтвердження видалення",
+            message="Ви впевнені що хочете видалити усі записи з історії?"
+        )
+        if is_confirmed:
+            self.delete_all_history()
+            self.view.frames[config.HISTORY_FRAME].remove_all_records_from_ui()
+
+    def handle_back_to_main_frame(self):
+        self.view.show_frame(config.MAIN_FRAME)
+        self.view.set_current_frame(config.MAIN_FRAME)
         
