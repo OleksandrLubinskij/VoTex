@@ -2,16 +2,23 @@ import customtkinter as ctk
 import os
 from PIL import Image
 import src.config as config
+from src.model.handle_json import read_json
+
 class BaseView(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
+        # ВАЖЛИВО: додаємо fg_color=config.FG_COLOR сюди. 
+        # Це виправляє "криве" відображення при запуску.
+        if "fg_color" not in kwargs:
+            kwargs["fg_color"] = config.FG_COLOR
+            
         super().__init__(master, **kwargs)
-        
 
     def create_label(self, master, text, var=None, font_size=24, weight="bold"):
         label = ctk.CTkLabel(
             master=master,
             text=text,
             font=("Segoe UI", font_size, weight),
+            text_color=config.TEXT_COLOR, # Беремо з конфігу
             textvariable=var
         )
         return label
@@ -26,10 +33,10 @@ class BaseView(ctk.CTkFrame):
             corner_radius=8,
             dynamic_resizing=False,
             anchor="center", 
-            fg_color="#40c057",   
-            button_color="#31b249", 
-            button_hover_color="#2b9a3f",
-            text_color="#000000",
+            fg_color=config.SIGNATURE_GREEN,   
+            button_color="#31b249", # Можна теж замінити на config.SIGNATURE_GREEN_HOVER
+            button_hover_color=config.SIGNATURE_GREEN_HOVER,
+            text_color=config.TEXT_COLOR,
             font=("Segoe UI", 20, "bold"),
             dropdown_font=("Segoe UI", 20)
         )
@@ -40,12 +47,12 @@ class BaseView(ctk.CTkFrame):
             master=master,
             text="",
             variable=var,
-            progress_color="#40c057",
+            progress_color=config.SIGNATURE_GREEN,
             width=70
         )
         return switch
     
-    def create_button(self, master, text, command, fg_color="#40c057", hover_color="#2b9a3f", font_size=20, height=56, width=140, image=None):
+    def create_button(self, master, text, command, fg_color=config.SIGNATURE_GREEN, hover_color=config.SIGNATURE_GREEN_HOVER, font_size=20, height=56, width=140, image=None):
         button = ctk.CTkButton(
             master=master,
             text=text,
@@ -53,7 +60,7 @@ class BaseView(ctk.CTkFrame):
             fg_color=fg_color,
             hover_color=hover_color,
             font=("Segoe UI", font_size, "bold"),
-            text_color="#000000",
+            text_color=config.TEXT_COLOR,
             corner_radius=8,
             height=height,
             width=width,
@@ -61,7 +68,7 @@ class BaseView(ctk.CTkFrame):
         )
         return button
     
-    def create_action_button(self, master, text, image, command, color="#40c057", hover_color="#31b249"):
+    def create_action_button(self, master, text, image, command, color=config.SIGNATURE_GREEN, hover_color=config.SIGNATURE_GREEN_HOVER):
         return self.create_button(
             master=master, 
             text=text, 
@@ -71,40 +78,50 @@ class BaseView(ctk.CTkFrame):
             hover_color=hover_color,
             font_size=16, 
             height=32, 
-            width=1
+            width=1,
         )
+
 class SideBarFrame(ctk.CTkFrame):
     def __init__(self, controller, master, **kwargs):
+        # Сайдбар має свій колір, тому тут FG_COLOR не потрібен
         super().__init__(master,
                         width=60, 
-                        fg_color="#40c057",
-                        border_color="#000000",
+                        fg_color=config.SIGNATURE_GREEN,
                         corner_radius=0,
                         **kwargs)
         self.controller = controller
         self.grid_propagate(False)
+        
         icons = ["history_light.png", "settings_light.png", "info_light.png"]
-        commands = [self.controller.open_history, self.controller.handle_open_settings, self.controller.handle_open_info]
+        commands = [
+            self.controller.open_history, 
+            self.controller.handle_open_settings, 
+            self.controller.handle_open_info
+        ]
+        
         for command_index, icon_name in enumerate(icons):
-
             icon_path = os.path.join(config.ASSETS_DIR, icon_name)
 
-            icon = ctk.CTkImage(
-                light_image = Image.open(icon_path),
-                dark_image= Image.open(icon_path.replace("light", "dark")),
-                size=(40, 40)
-            )
+            # Перевірка наявності файлу іконки (щоб програма не падала)
+            try:
+                icon = ctk.CTkImage(
+                    light_image = Image.open(icon_path),
+                    dark_image= Image.open(icon_path.replace("light", "dark")),
+                    size=(40, 40)
+                )
+            except Exception as e:
+                print(f"Помилка завантаження іконки {icon_name}: {e}")
+                continue
 
-            self.icon_btn = ctk.CTkButton(
+            btn = ctk.CTkButton(
                 self,
                 text="",
                 image=icon,
                 width=60,
                 height=60,
                 fg_color="transparent",
-                hover_color="#66ce79",
+                hover_color=config.SIGNATURE_GREEN_HOVER,
                 corner_radius=8,
                 command=commands[command_index]
             )
-
-            self.icon_btn.pack(pady=(20, 10), padx=5)
+            btn.pack(pady=(20, 10), padx=5)

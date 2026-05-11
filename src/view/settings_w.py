@@ -44,7 +44,7 @@ class SettingsFrame(BaseView):
         # Тема
         self.create_label(self.general_section, text="Кольорова тема", font_size=16).grid(row=2, column=0, padx=20, pady=20, sticky="w")
         self.theme_var = tk.StringVar(value=self.old_settings.get(config.THEME_KEY))
-        self.theme_option = self.create_option(self.general_section, values=config.THEMES, var=self.theme_var)
+        self.theme_option = self.create_option(self.general_section, values=tuple(k for k in config.THEMES.keys()), var=self.theme_var)
         self.theme_option.configure(width=200)
         self.theme_option.grid(row=2, column=1, padx=20, pady=20, sticky="e")
 
@@ -104,6 +104,8 @@ class SettingsFrame(BaseView):
         return self.is_change
 
     def save_settings(self):
+        current_theme = self.get_current_ui_state()[config.THEME_KEY]
+        ctk.set_appearance_mode(config.THEMES[current_theme])
         return self.get_current_ui_state()
     
     def set_actual_settings(self):

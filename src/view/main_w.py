@@ -9,7 +9,6 @@ class MainFrame(BaseView):
     def __init__(self, controller, master, **kwargs):
         super().__init__(master, **kwargs)
         self.controller = controller
-        self.configure(fg_color="#f0f8ff")
 
         self.available_languages = self.controller.get_settings()[config.LANGUAGES_KEY]
 

@@ -179,7 +179,12 @@ class Controller:
             self.handle_back_to_main_frame()
     
     def handle_open_info(self):
-        pass
+        current_frame = self.view.get_current_frame()
+        if current_frame != config.INFO_FRAME:
+            self.switch_frame(config.INFO_FRAME)
+            self.view.set_current_frame(config.INFO_FRAME)
+        else:
+            self.handle_back_to_main_frame()
         
     def browse_file(self):
         file_path = tk.filedialog.askopenfilename(

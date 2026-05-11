@@ -6,17 +6,20 @@ from src.view.main_w import MainFrame
 from src.view.result_w import ResultFrame
 from src.view.history_w import HistoryFrame
 from src.view.settings_w import SettingsFrame
+from src.view.info_w import InfoFrame
 from src.view.base_view import SideBarFrame
 
 class View(ctk.CTk):
     def __init__(self, controller):
         super().__init__()
         self.title("VoTex")
-        self.after(0, self.set_maximized)
+        self.after(0, lambda: self.state('zoomed'))
     
     
         self.frames = {}
         self.controller = controller
+        self.theme = self.controller.get_settings()[config.THEME_KEY]
+        ctk.set_appearance_mode(config.THEMES[self.theme])
         self.container = ctk.CTkFrame(self)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=0)
@@ -27,7 +30,7 @@ class View(ctk.CTk):
         self.sidebar = SideBarFrame(master=self.container, controller = self.controller)
         self.sidebar.grid(row=0, column=0, sticky="nswe")
         self._current_frame = config.MAIN_FRAME
-        for F in (MainFrame, ResultFrame, HistoryFrame, SettingsFrame):
+        for F in (MainFrame, ResultFrame, HistoryFrame, SettingsFrame, InfoFrame):
             page_name = F.__name__
             frame = F(controller=self.controller, master=self.container)
             self.frames[page_name] = frame

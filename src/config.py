@@ -29,6 +29,7 @@ MAIN_FRAME = "MainFrame"
 RESULT_FRAME = "ResultFrame"
 HISTORY_FRAME = "HistoryFrame"
 SETTINGS_FRAME = "SettingsFrame"
+INFO_FRAME = "InfoFrame"
 
 CURRENT_OS = platform.system()
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -41,9 +42,14 @@ SETTINGS_PATH = os.path.join(BASE_DIR, "settings.json")
 
 TABLE_HEADERS = ("Модель", "Мова", "FP16", "Prep", "Промпт", "Результат", "")
 
-THEMES = ("Світла", "Темна")
+THEMES = {"Світла": "light", "Темна": "dark"}
 
 
 DEFAULT_SAVE_PATH_KEY = "save_path"
 LANGUAGES_KEY = "languages"
 THEME_KEY = "theme"
+
+TEXT_COLOR = ("#000000", "#f0f8ff")
+FG_COLOR = ("#f0f8ff", "#504B4B")
+SIGNATURE_GREEN = ("#40c057", "#2e9641")
+SIGNATURE_GREEN_HOVER = ("#31b249", "#238535")
