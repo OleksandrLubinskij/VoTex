@@ -8,6 +8,8 @@ import src.config as config
 class MainFrame(BaseView):
     def __init__(self, controller, master, **kwargs):
         super().__init__(master, **kwargs)
+        self.configure(fg_color=config.FG_COLOR)
+
         self.controller = controller
 
         self.available_languages = self.controller.get_settings()[config.LANGUAGES_KEY]
@@ -56,12 +58,12 @@ class InputFrame(ctk.CTkFrame):
         
         self.choose_path_btn = ctk.CTkButton(
             master=self,
-            fg_color="#40c057",
-            hover_color="#31b249",
+            fg_color=config.SIGNATURE_GREEN,
+            hover_color=config.SIGNATURE_GREEN_HOVER,
             textvariable=master.master.file_name_var,
             command=self.controller.browse_file,
             font=("Segoe UI", 24, "bold"),
-            text_color="#000000",
+            text_color=config.TEXT_COLOR,
             width=800, height=80
         )
         self.choose_path_btn.grid(row=0, column=1, padx=10)
@@ -74,8 +76,8 @@ class InputFrame(ctk.CTkFrame):
             text="",
             image=icon,
             width=80, height=80,
-            fg_color="#40c057",
-            hover_color="#31b249",
+            fg_color=config.SIGNATURE_GREEN,
+            hover_color=config.SIGNATURE_GREEN_HOVER,
             command=self.controller.start_transcribation
         )
         self.start_algorithm_btn.grid(row=0, column=2, padx=10)
@@ -130,7 +132,7 @@ class ParametersFrame(ctk.CTkFrame):
             self.prompt_frame,
             width=400, height=250,
             corner_radius=12, border_width=2,
-            border_color="#40c057", fg_color="#ffffff", text_color="#000000",
+            border_color=config.SIGNATURE_GREEN, fg_color=config.FG_COLOR, text_color=config.TEXT_COLOR,
             font=("Segoe UI", 18), wrap="word"
         )
         self.prompt_textbox.pack(fill="both", expand=True)

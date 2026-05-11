@@ -13,13 +13,15 @@ class View(ctk.CTk):
     def __init__(self, controller):
         super().__init__()
         self.title("VoTex")
-        self.set_maximized()
-    
-    
-        self.frames = {}
         self.controller = controller
         self.theme = self.controller.get_settings()[config.THEME_KEY]
         ctk.set_appearance_mode(config.THEMES[self.theme])
+        self.after(0, self.set_maximized)
+    
+    
+        self.frames = {}
+        
+        
         self.container = ctk.CTkFrame(self)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=0)

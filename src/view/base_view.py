@@ -7,12 +7,12 @@ class BaseView(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-    def create_label(self, master, text, var=None, font_size=24, weight="bold"):
+    def create_label(self, master, text, var=None, font_size=24, weight="bold", text_color=config.TEXT_COLOR):
         label = ctk.CTkLabel(
             master=master,
             text=text,
             font=("Segoe UI", font_size, weight),
-            text_color=config.TEXT_COLOR,
+            text_color=text_color,
             textvariable=var
         )
         return label

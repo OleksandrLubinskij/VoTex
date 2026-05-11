@@ -6,7 +6,7 @@ class ResultFrame(BaseView):
     def __init__(self, controller, master, **kwargs):
         super().__init__(master, **kwargs)
         self.controller = controller
-        self.configure(fg_color="#f0f8ff")
+        self.configure(fg_color=config.FG_COLOR)
         self.processing_label_var = tk.StringVar()
 
         self.main_frame = ctk.CTkFrame(master=self, fg_color="transparent")
@@ -21,9 +21,9 @@ class ResultFrame(BaseView):
 
         #Фрейм з результатом
         self.result_frame = ctk.CTkFrame(self.main_frame, 
-                                             fg_color="white",
+                                             fg_color=config.FG_COLOR,
                                              border_width=2,
-                                             border_color="#40c057",
+                                             border_color=config.SIGNATURE_GREEN,
                                              corner_radius=15,
                                              height=600,
                                              width=800
@@ -35,7 +35,7 @@ class ResultFrame(BaseView):
                                                          mode="indeterminate",
                                                          height=30,
                                                          width=400,
-                                                         progress_color="#40c057",
+                                                         progress_color=config.SIGNATURE_GREEN,
                                                          border_width=2,
                                                          corner_radius=10)
         
@@ -43,10 +43,10 @@ class ResultFrame(BaseView):
         
 
         self.result_textbox = ctk.CTkTextbox(master=self.result_frame,
-                                             fg_color="transparent",
+                                             fg_color=config.TEXT_BOX_COLOR,
                                              height=600,
                                              width=800,
-                                             text_color="black",
+                                             text_color=config.TEXT_COLOR,
                                              font=("Segoe UI", 18),
                                              corner_radius=12)
         
