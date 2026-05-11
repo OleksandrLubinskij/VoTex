@@ -28,7 +28,7 @@ class ModelTransrib:
         self._model_size = settings.get("model_size", self._model_size)
         self._language = settings.get("language", self._language)
         self._fp16 = settings.get("fp16", self._fp16)
-        self._use_preprocessing = settings.get("use_preprocessing", self._use_preprocessing)
+        self._use_preprocessing = settings.get("preprocessing", self._use_preprocessing)
         self._prompt = settings.get("prompt", self._prompt)
         
     def get_trinscribe_data(self):

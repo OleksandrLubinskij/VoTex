@@ -10,7 +10,7 @@ class TranscribeRecord(Base):
     language = Column(String)
     fp16 = Column(Boolean)
     preprocessing = Column(Boolean)
-    timestamp = Column(DateTime, default=datetime.now())
+    timestamp = Column(DateTime, default=datetime.now)
     prompt = Column(Text)
     result = Column(Text)
 

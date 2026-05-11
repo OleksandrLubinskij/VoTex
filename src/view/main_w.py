@@ -27,6 +27,7 @@ class MainFrame(BaseView):
 
     def compile_parameters(self):
         prompt_var = self.main_content.parameters_frame.prompt_textbox.get("1.0", "end-1c")
+        print(self.preprocessing_var.get())
         return {
             "file_path": self.file_path_var.get(),
             "model_size": self.model_size_var.get(),
