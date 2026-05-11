@@ -1,3 +1,11 @@
-{"save_path": "D:/Sasha", 
-"languages": ["en", "uk", "pl", "de", "fr"]
+{
+    "save_path": "D:/",
+    "theme": "Світла",
+    "languages": {
+        "en": "english",
+        "zh": "chinese",
+        "de": "german",
+        "es": "spanish",
+        "uk": "ukrainian"
+    }
 }

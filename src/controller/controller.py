@@ -1,5 +1,6 @@
 import threading
 import tkinter as tk
+from tkinter import filedialog
 from tkinter import messagebox
 from src.view.view import View
 from src.model.model import ModelTransrib
@@ -64,7 +65,7 @@ class Controller:
     
     def open_history(self):
         current_frame = self.view.get_current_frame()
-        if current_frame == config.MAIN_FRAME:
+        if current_frame != config.HISTORY_FRAME:
             self.switch_frame(config.HISTORY_FRAME)
             self.view.frames[config.HISTORY_FRAME].fill_table()
             self.view.set_current_frame(config.HISTORY_FRAME)
@@ -72,14 +73,31 @@ class Controller:
             self.handle_back_to_main_frame()
         
     def switch_frame(self, frame):
+        settings_f = self.view.frames[config.SETTINGS_FRAME]
+        if self.view.get_current_frame() == config.SETTINGS_FRAME and settings_f.check_for_changes():
+
+            choice = messagebox.askyesno(
+                title="Незбережені зміни",
+                message="Ви змінили налаштування. Зберегти їх перед виходом?"
+            )
+            
+            if choice is True: 
+                self.handle_save_settings()
+            elif choice is False:
+                settings_f.set_actual_settings()
+
         self.view.show_frame(frame)
+        self.view.set_current_frame(frame)
     
     def get_available_models(self):
         return self.model.get_valid_models()
     
-    def get_available_languages(self):
+    def get_settings(self):
         settings = read_json("settings.json")
-        return settings["languages"]
+        return settings
+    
+    def get_available_languages(self):
+        return self.model.get_available_languages()
     
     def get_history(self):
         try:
@@ -148,6 +166,48 @@ class Controller:
             self.view.frames[config.HISTORY_FRAME].remove_all_records_from_ui()
 
     def handle_back_to_main_frame(self):
-        self.view.show_frame(config.MAIN_FRAME)
+        self.switch_frame(config.MAIN_FRAME)
         self.view.set_current_frame(config.MAIN_FRAME)
+
+    def handle_open_settings(self):
+        current_frame = self.view.get_current_frame()
+        if current_frame != config.SETTINGS_FRAME:
+            self.switch_frame(config.SETTINGS_FRAME)
+            self.view.frames[config.SETTINGS_FRAME].set_actual_settings()
+            self.view.set_current_frame(config.SETTINGS_FRAME)
+        else:
+            self.handle_back_to_main_frame()
+    
+    def handle_open_info(self):
+        pass
         
+    def browse_file(self):
+        file_path = tk.filedialog.askopenfilename(
+            title="Оберіть файл",
+            filetypes=[("Медіа файли", "*.mp3 *.wav *.m4a *.mp4 *.mkv *.avi")]
+        )
+        if file_path:
+            self.view.frames[config.MAIN_FRAME].file_name_var.set(os.path.basename(file_path))
+            self.view.frames[config.MAIN_FRAME].file_path_var.set(file_path)
+
+    def browse_directory(self):
+        selected_path = filedialog.askdirectory(
+            initialdir=os.getcwd(),
+            title="Оберіть папку за замовчуванням"
+        )
+
+        if selected_path:
+            self.view.frames[config.SETTINGS_FRAME].path_var.set(selected_path)
+    
+    def handle_save_settings(self):
+        settings_frame = self.view.frames[config.SETTINGS_FRAME]
+        new_settings = settings_frame.save_settings()
+        write_json(config.SETTINGS_PATH, new_settings)
+        settings_frame.old_settings = new_settings
+        settings_frame.is_change = False
+        settings_frame.save_and_notify()
+        new_lang_names = list(new_settings[config.LANGUAGES_KEY].values())
+        main_f = self.view.frames[config.MAIN_FRAME]
+        main_f.available_languages = new_settings[config.LANGUAGES_KEY]
+        main_f.main_content.parameters_frame.update_lang_options(new_lang_names)
+        settings_frame.is_change = False

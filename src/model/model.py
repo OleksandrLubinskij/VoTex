@@ -157,3 +157,6 @@ class ModelTransrib:
             output += f"[{start} : {end}]  {content}\n\n"
         self.result = output
         return output
+    
+    def get_available_languages(self):
+        return whisper.tokenizer.LANGUAGES

@@ -83,8 +83,9 @@ class SideBarFrame(ctk.CTkFrame):
                         **kwargs)
         self.controller = controller
         self.grid_propagate(False)
-        icons = ["history_light.png", "info_light.png", "settings_light.png"]
-        for icon_name in icons:
+        icons = ["history_light.png", "settings_light.png", "info_light.png"]
+        commands = [self.controller.open_history, self.controller.handle_open_settings, self.controller.handle_open_info]
+        for command_index, icon_name in enumerate(icons):
 
             icon_path = os.path.join(config.ASSETS_DIR, icon_name)
 
@@ -103,7 +104,7 @@ class SideBarFrame(ctk.CTkFrame):
                 fg_color="transparent",
                 hover_color="#66ce79",
                 corner_radius=8,
-                command=self.controller.open_history
+                command=commands[command_index]
             )
 
             self.icon_btn.pack(pady=(20, 10), padx=5)
