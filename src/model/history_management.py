@@ -1,6 +1,6 @@
 from src.model.database import Session, Base, engine
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, select, delete
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, select, delete, func
 
 class TranscribeRecord(Base):
     __tablename__ = "history"
@@ -68,5 +68,11 @@ class HistoryManager():
                           ).where(TranscribeRecord.id == id)
             
             session.execute(stmt)
+
+    def get_total_records_count(self):
+        with Session() as session:
+            stmt = select(func.count()).select_from(TranscribeRecord)
+            result = session.execute(stmt).scalar()
+            return result or 0
             
 

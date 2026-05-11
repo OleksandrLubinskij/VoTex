@@ -15,6 +15,7 @@ class Controller:
         self.model = ModelTransrib() 
         self.view = View(controller=self)
 
+        self.history_offset = 0
         self.history_manager = HistoryManager()
         self.view.set_maximized()
         self.view.setup_icon()
@@ -66,8 +67,10 @@ class Controller:
     def open_history(self):
         current_frame = self.view.get_current_frame()
         if current_frame != config.HISTORY_FRAME:
+            self.history_offset = 0 
+            self.view.frames[config.HISTORY_FRAME].record_on_ui_count = 0
             self.switch_frame(config.HISTORY_FRAME)
-            self.view.frames[config.HISTORY_FRAME].fill_table()
+            self.view.frames[config.HISTORY_FRAME].fill_table(load_more=False, offset=0)
             self.view.set_current_frame(config.HISTORY_FRAME)
         else:
             self.handle_back_to_main_frame()
@@ -99,9 +102,9 @@ class Controller:
     def get_available_languages(self):
         return self.model.get_available_languages()
     
-    def get_history(self):
+    def get_history(self, offset):
         try:
-            result = self.history_manager.read_records()
+            result = self.history_manager.read_records(offset=offset)
         except Exception as e:
             result = "Щось пішло не так ):"
             print(f"Datasbase error: {e}")
@@ -142,7 +145,18 @@ class Controller:
         try:
             self.history_manager.delete_by_id(id)
         except Exception as e:
-            print(f"Datasbase error: {e}")
+            print(f"Database error: {e}")
+
+    def load_more_history(self):
+        self.history_offset += 10
+        self.view.frames[config.HISTORY_FRAME].fill_table(load_more=True, offset=self.history_offset)
+
+    def history_record_count(self):
+        try:
+            return self.history_manager.get_total_records_count()
+        except Exception as e:
+            print(f"Database error: {e}")
+            return 0
 
     def open_prompt_viewer(self, id):
         prompt = self.get_history_prompt(id)

@@ -14,6 +14,7 @@ class HistoryFrame(BaseView):
         self.configure(fg_color=config.FG_COLOR)
         self.main_container = ctk.CTkFrame(self, fg_color="transparent")
         self.main_container.pack(expand=True, fill="both", padx=20, pady=20)
+        self.record_on_ui_count = 0
 
         self.history_label = self.create_label(self.main_container, text="Історія результатів", font_size=32)
         self.history_label.pack(anchor="w", pady=(0, 20))
@@ -29,15 +30,12 @@ class HistoryFrame(BaseView):
 
             align = "we"
             
-            # lbl = ctk.CTkLabel(self.header_frame, text=col_name, font=("Segoe UI", 24, "bold"))
             lbl = self.create_label(master=self.header_frame, text=col_name, text_color="#000000")
             lbl.grid(row=0, column=i, sticky=align, padx=10, pady=10)
 
-        # Список із прокруткою
         self.scroll_frame = ctk.CTkScrollableFrame(self.main_container, fg_color="transparent")
         self.scroll_frame.pack(expand=True, fill="both", pady=15)
 
-        # Панель кнопок знизу
         self.bottom_bar = ctk.CTkFrame(self.main_container, fg_color="transparent")
         self.bottom_bar.pack(fill="x", pady=(15, 0))
 
@@ -45,17 +43,31 @@ class HistoryFrame(BaseView):
                           self.controller.handle_back_to_main_frame,
                           width=200).pack(side="left", padx=5)
         
+        self.load_more_btn = self.create_button(self.bottom_bar, "Завантажити ще", 
+                          self.controller.load_more_history, 
+                          fg_color=config.SIGNATURE_GREEN, hover_color=config.SIGNATURE_GREEN_HOVER, width=200)
+        self.load_more_btn.pack(side="left", padx=5)
+        
         self.create_button(self.bottom_bar, "Очистити все", 
                           self.controller.delete_all_records, 
                           fg_color=config.SIGNATURE_RED, hover_color=config.SIGNATURE_RED_HOVER, width=200).pack(side="right", padx=5)
 
-    def fill_table(self):
-        font_size=20
-        for widget in self.scroll_frame.winfo_children():
-            widget.destroy()
-        self.rows.clear()
+    def fill_table(self, load_more, offset):
+        font_size = 20
+        
+        if not load_more:
+            for widget in self.scroll_frame.winfo_children():
+                widget.destroy()
+            self.rows.clear()
+            self.record_on_ui_count = 0
+            self.load_more_btn.pack(side="left", padx=5)
+        data = self.controller.get_history(offset=offset)
 
-        data = self.controller.get_history()
+        actual_record_count = self.controller.history_record_count()
+
+        if not data:
+            self.load_more_btn.pack_forget()
+            return 0
         
         for record in data:
             table_row = ctk.CTkFrame(self.scroll_frame, fg_color="transparent")
@@ -107,6 +119,14 @@ class HistoryFrame(BaseView):
                 .grid(row=0, column=6, pady=2, padx=10)
             
             self.rows[record.id] = table_row
+
+        self.record_on_ui_count += len(data)
+        
+        # 5. Перевіряємо, чи треба сховати кнопку для наступного разу
+        actual_total_count = self.controller.history_record_count()
+            
+        if self.record_on_ui_count >= actual_total_count:
+            self.load_more_btn.pack_forget()
 
     def remove_record_from_ui(self, record_id):
         if record_id in self.rows:
