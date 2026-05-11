@@ -51,6 +51,7 @@ THEME_KEY = "theme"
 
 TEXT_COLOR = ("#000000", "#f0f8ff")
 FG_COLOR = ("#f0f8ff", "#504B4B")
+SWAP_FG_COLOR = ("#504B4B", "#f0f8ff")
 SIGNATURE_GREEN = ("#40c057", "#2e9641")
 SIGNATURE_GREEN_HOVER = ("#31b249", "#238535")
 TEXT_BOX_COLOR = ("#ffffff", "#6E6969")

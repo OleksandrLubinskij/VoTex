@@ -124,7 +124,7 @@ class ParametersFrame(ctk.CTkFrame):
         master.master.create_switch(self.p_frame, master.master.preprocessing_var).pack(side="right")
 
         # Поле Промпту (Права колонка)
-        self.prompt_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.prompt_frame = ctk.CTkFrame(self, fg_color=config.FG_COLOR)
         self.prompt_frame.grid(row=0, column=2, sticky="nsew")
         
         master.master.create_label(self.prompt_frame, "Промпт").pack(anchor="w", pady=(0, 5))
@@ -132,7 +132,7 @@ class ParametersFrame(ctk.CTkFrame):
             self.prompt_frame,
             width=400, height=250,
             corner_radius=12, border_width=2,
-            border_color=config.SIGNATURE_GREEN, fg_color=config.FG_COLOR, text_color=config.TEXT_COLOR,
+            border_color=config.SIGNATURE_GREEN, fg_color=config.TEXT_BOX_COLOR, text_color=config.TEXT_COLOR,
             font=("Segoe UI", 18), wrap="word"
         )
         self.prompt_textbox.pack(fill="both", expand=True)

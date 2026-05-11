@@ -122,7 +122,6 @@ class HistoryFrame(BaseView):
 
         self.record_on_ui_count += len(data)
         
-        # 5. Перевіряємо, чи треба сховати кнопку для наступного разу
         actual_total_count = self.controller.history_record_count()
             
         if self.record_on_ui_count >= actual_total_count:

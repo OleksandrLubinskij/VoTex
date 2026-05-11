@@ -203,7 +203,7 @@ class Controller:
     def browse_file(self):
         file_path = tk.filedialog.askopenfilename(
             title="Оберіть файл",
-            filetypes=[("Медіа файли", "*.mp3 *.wav *.m4a *.mp4 *.mkv *.avi")]
+            filetypes=[("Медіа файли", "*.mp3 *.wav *.m4a *.mp4 *.mkv *.avi *.ogg")]
         )
         if file_path:
             self.view.frames[config.MAIN_FRAME].file_name_var.set(os.path.basename(file_path))

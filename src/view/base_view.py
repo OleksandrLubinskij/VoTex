@@ -42,6 +42,7 @@ class BaseView(ctk.CTkFrame):
             text="",
             variable=var,
             progress_color=config.SIGNATURE_GREEN,
+            fg_color=config.SWAP_FG_COLOR,
             width=70
         )
         return switch
