@@ -2,15 +2,9 @@ import customtkinter as ctk
 import os
 from PIL import Image
 import src.config as config
-from src.model.handle_json import read_json
 
 class BaseView(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
-        # ВАЖЛИВО: додаємо fg_color=config.FG_COLOR сюди. 
-        # Це виправляє "криве" відображення при запуску.
-        if "fg_color" not in kwargs:
-            kwargs["fg_color"] = config.FG_COLOR
-            
         super().__init__(master, **kwargs)
 
     def create_label(self, master, text, var=None, font_size=24, weight="bold"):
@@ -18,7 +12,7 @@ class BaseView(ctk.CTkFrame):
             master=master,
             text=text,
             font=("Segoe UI", font_size, weight),
-            text_color=config.TEXT_COLOR, # Беремо з конфігу
+            text_color=config.TEXT_COLOR,
             textvariable=var
         )
         return label
@@ -34,7 +28,7 @@ class BaseView(ctk.CTkFrame):
             dynamic_resizing=False,
             anchor="center", 
             fg_color=config.SIGNATURE_GREEN,   
-            button_color="#31b249", # Можна теж замінити на config.SIGNATURE_GREEN_HOVER
+            button_color="#31b249",
             button_hover_color=config.SIGNATURE_GREEN_HOVER,
             text_color=config.TEXT_COLOR,
             font=("Segoe UI", 20, "bold"),
@@ -83,7 +77,6 @@ class BaseView(ctk.CTkFrame):
 
 class SideBarFrame(ctk.CTkFrame):
     def __init__(self, controller, master, **kwargs):
-        # Сайдбар має свій колір, тому тут FG_COLOR не потрібен
         super().__init__(master,
                         width=60, 
                         fg_color=config.SIGNATURE_GREEN,

@@ -22,7 +22,7 @@ class MainFrame(BaseView):
         
         self.main_content = MainContent(master=self, controller=self.controller)
         self.main_content.place(relx=0.5, rely=0.5, anchor="center")
-    
+
     def compile_parameters(self):
         prompt_var = self.main_content.parameters_frame.prompt_textbox.get("1.0", "end-1c")
         return {
@@ -33,7 +33,6 @@ class MainFrame(BaseView):
             "preprocessing": self.preprocessing_var.get(),
             "prompt": prompt_var,
         }
-    
 
 class MainContent(ctk.CTkFrame):
     def __init__(self, master, controller, **kwargs):
@@ -47,7 +46,6 @@ class MainContent(ctk.CTkFrame):
         self.input_frame.grid(row=0, column=0, sticky="we", pady=(0, 40))
         self.parameters_frame.grid(row=1, column=0, sticky="nwe")
 
-   
 class InputFrame(ctk.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
@@ -55,7 +53,6 @@ class InputFrame(ctk.CTkFrame):
         
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(3, weight=1)
-        
         
         self.choose_path_btn = ctk.CTkButton(
             master=self,
@@ -65,7 +62,7 @@ class InputFrame(ctk.CTkFrame):
             command=self.controller.browse_file,
             font=("Segoe UI", 24, "bold"),
             text_color="#000000",
-            width=800, height=80 
+            width=800, height=80
         )
         self.choose_path_btn.grid(row=0, column=1, padx=10)
 
@@ -79,17 +76,16 @@ class InputFrame(ctk.CTkFrame):
             width=80, height=80,
             fg_color="#40c057",
             hover_color="#31b249",
-            command=self.controller.start_transcribation 
+            command=self.controller.start_transcribation
         )
         self.start_algorithm_btn.grid(row=0, column=2, padx=10)
 
 class ParametersFrame(ctk.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
-        self.controller = controller 
+        self.controller = controller
         
         self.available_models = self.controller.get_available_models()
-        
         
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=0)
@@ -141,6 +137,6 @@ class ParametersFrame(ctk.CTkFrame):
 
     def update_lang_options(self, new_languages):
         self.lang = new_languages
-        self.lang_options.configure(values=new_languages) 
+        self.lang_options.configure(values=new_languages)
         if self.lang:
             self.master.master.language_var.set(self.lang[0])

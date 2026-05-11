@@ -13,7 +13,7 @@ class View(ctk.CTk):
     def __init__(self, controller):
         super().__init__()
         self.title("VoTex")
-        self.after(0, lambda: self.state('zoomed'))
+        self.set_maximized()
     
     
         self.frames = {}
